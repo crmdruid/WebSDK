@@ -88,4 +88,38 @@ Additionally, there are operations that allow for quickly performing the followi
 I've had some issues with the OOTB WebAPI wrapper (Xrm.WebAPI. ), in terms of the syntax and functionality available. Some of the main features of my implementation are:
 
 ### Synchronous and Asynchronous operations
-All operations in the WebSDK library are able to be performed synchronously and asynchronously. 
+All operations in the WebSDK library are able to be performed synchronously and asynchronously. Whether an action is performed synchronously or asynchronously is determined by two factors.
+1. Whether the asyncByDefault flag is set to true
+2. Whether the async mode is set manually on the method
+
+#### Setting flag globally
+This can be done when instantiating the object:
+```javascript
+var sdk = new WebSDK();
+sdk.asyncByDefault = false;
+
+OR
+
+var sdk = new WebSDK(apiUrl, version, asyncByDefault);
+```
+#### Setting flag per operation
+Every operation can be performed sync or async based on a setting when executing the operation:
+```javascript
+sdk.Create(entity, async); // true for async, false for sync
+```
+
+#### Async Callbacks
+Callbacks for async operations can be set in a few different ways.
+1. Using the JavaScript promise functionality -> .then, .catch
+  + Note that this can have some issues in IE, as Promises are not supported in IE.
+2. Including callbacks in the method call
+
+```javascript
+// Via Promises
+sdk.Retrieve("account", "acc10000-0000-0000-0000-000000000000", new WebSDK.ColumnSet(["name", "description"]))
+  .then(function (record) {
+    console.log(record.guid);
+  });
+// Via callback function
+sdk.Retrieve("account", "acc10000-0000-0000-0000-000000000000", new WebSDK.ColumnSet(["name", "description"]), true, successCallback, errorCallback);
+```
