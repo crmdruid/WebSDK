@@ -819,7 +819,7 @@ WebSDK.Request = {
         Object.keys(entity.attributes).forEach(function (key) {
             if (entity.attributes[key] instanceof WebSDK.EntityReference) {
                 var newAttString = entity.attributes[key].useIsMultiValue ? key + '_' + entity.attributes[key].logicalName : key;
-                entity.attributes[newAttString + "@odata.bind"] = "/" + WebSDK.Request._getSetName(entity.attributes[key].logicalName) + "(" + entity.attributes[key].guid + ")";
+                entity.attributes[newAttString + "@odata.bind"] = "/" + WebSDK.Request._getSetName(entity.attributes[key].logicalName) + "(" + WebSDK.prototype._checkBracesGuid(entity.attributes[key].guid) + ")";
                 delete entity.attributes[key];
             }
         });
@@ -828,8 +828,11 @@ WebSDK.Request = {
     _resolveFetchName: function (fetchXml, logicalName) {
         if (logicalName == null) {
             var temp = fetchXml.replace(/"/g, "'");
+            console.log(temp);
             temp = temp.substring(fetchXml.indexOf("entity name"));
+            console.log(temp)
             temp = temp.substring(temp.indexOf("'") + 1);
+            console.log(temp)
             logicalName = temp.substring(0, temp.indexOf("'"));
         }
         return logicalName;
@@ -852,7 +855,7 @@ WebSDK.Request = {
     },
     _resolveEntityReferenceParam: function (entityRef) {
         var logicalName = entityRef.logicalName;
-        var guid = entityRef.guid;
+        var guid = WebSDK.prototype._checkBracesGuid(entityRef.guid);
         var idName = logicalName + "id";
         var o = {
             "@odata.type": "Microsoft.Dynamics.CRM." + logicalName
@@ -863,7 +866,7 @@ WebSDK.Request = {
     _resolveEntityParam: function (entity) {
         entity = WebSDK.Request._resolveBodyEntityReferences(entity);
         var logicalName = entity.logicalName;
-        var guid = entity.guid;
+        var guid = WebSDK.prototype._checkBracesGuid(entity.guid);
         var idName = logicalName + "id";
         var o = entity.attributes;
         o["@odata.type"] = "Microsoft.Dynamics.CRM." + logicalName;
@@ -949,23 +952,23 @@ WebSDK.Request = {
         var endpoint = actionName;
         if (boundReference != null && boundReference instanceof WebSDK.EntityReference) {
             setName = WebSDK.Request._getSetName(boundReference.logicalName);
-            endpoint = setName + '(' + boundReference.guid + ')/' + "Microsoft.Dynamics.CRM." + endpoint;
+            endpoint = setName + '(' + WebSDK.prototype._checkBracesGuid(boundReference.guid) + ')/' + "Microsoft.Dynamics.CRM." + endpoint;
         }
         parameters = WebSDK.Request._resolveFunctionParams(parameters);
 
         return new WebSDK.Request._base("POST", parameters, endpoint, WebSDK.Request._getHeaders());
     },
     Associate: function (primaryRecord, relationship, relatedRecord, apiUrl) {
-        var endpoint = WebSDK.Request._getSetName(primaryRecord.logicalName) + '(' + primaryRecord.guid + ')/' + relationship + '/$ref';
+        var endpoint = WebSDK.Request._getSetName(primaryRecord.logicalName) + '(' + WebSDK.prototype._checkBracesGuid(primaryRecord.guid) + ')/' + relationship + '/$ref';
         var body = {
-            "@odata.id": apiUrl + WebSDK.Request._getSetName(relatedRecord.logicalName) + '(' + relatedRecord.guid + ')'
+            "@odata.id": apiUrl + WebSDK.Request._getSetName(relatedRecord.logicalName) + '(' + WebSDK.prototype._checkBracesGuid(relatedRecord.guid) + ')'
         }
 
         return new WebSDK.Request._base("POST", body, endpoint, WebSDK.Request._getHeaders());
     },
     Disassociate: function (primaryRecord, relationship, relatedRecord, apiUrl) {
-        var relatedPortion = apiUrl + WebSDK.Request._getSetName(relatedRecord.logicalName) + '(' + relatedRecord.guid + ')';
-        var endpoint = WebSDK.Request._getSetName(primaryRecord.logicalName) + '(' + primaryRecord.guid + ')/' + relationship + '/$ref?$id=' + relatedPortion;
+        var relatedPortion = apiUrl + WebSDK.Request._getSetName(relatedRecord.logicalName) + '(' + WebSDK.prototype._checkBracesGuid(relatedRecord.guid) + ')';
+        var endpoint = WebSDK.Request._getSetName(primaryRecord.logicalName) + '(' + WebSDK.prototype._checkBracesGuid(primaryRecord.guid) + ')/' + relationship + '/$ref?$id=' + relatedPortion;
 
         return new WebSDK.Request._base("DELETE", {}, endpoint, WebSDK.Request._getHeaders());
     },
@@ -978,7 +981,7 @@ WebSDK.Request = {
         var paramCount = 1;
 
         if (!!bindOn) {
-            endpoint = WebSDK.Request._getSetName(bindOn.logicalName) + '(' + bindOn.guid + ')/Microsoft.Dynamics.CRM.' + functionName + '(';
+            endpoint = WebSDK.Request._getSetName(bindOn.logicalName) + '(' + WebSDK.prototype._checkBracesGuid(bindOn.guid) + ')/Microsoft.Dynamics.CRM.' + functionName + '(';
         }
         else {
             endpoint = functionName + '(';
@@ -1023,7 +1026,7 @@ WebSDK.Function.Parameter.prototype._evaluate = function () {
         val = "'" + val + "'";
     }
     else if (val instanceof WebSDK.EntityReference) {
-        val = "{'@odata.bind':'" + WebSDK.Request._getSetName(val.logicalName) + "(" + val.guid + ")'}"
+        val = "{'@odata.bind':'" + WebSDK.Request._getSetName(val.logicalName) + "(" + WebSDK.prototype._checkBracesGuid(val.guid) + ")'}"
     }
 
     return val;
