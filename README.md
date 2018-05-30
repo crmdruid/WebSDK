@@ -25,17 +25,64 @@ sdk.sdkUrl = "someURL";
 sdk.apiVersion = "9.0";
 sdk.asyncByDefault = false;
 ```
-## Request Syntax
+## Request Syntax (CRUD)
 There are a number of requests available to perform with very little to no code required to be written. Additionally, it is possible to very quickly create a custom request using the syntax available in the wrapper.
 
 #### Create Requests
+Creates a record with the given attributes. If an ID is specified, the record will be created with this ID
+
 ```javascript
 var acc1 = new WebSDK.Entity("account", "acc10000-0000-0000-0000-000000000000");
 acc1.attributes["name"] = "TESTAccount1";
 acc1.attributes["description"] = "This is a test account created with the WebSDK library";
 
-sdk.Create(acc1, false);
+sdk.Create(acc1);
 ```
+#### Retrieve Requests
+Retrieves the record that is specified by ID. In this case, retrieves the record that was created in the above section.
+
+```javascript
+sdk.Retrieve("account", "acc10000-0000-0000-0000-000000000000", new WebSDK.ColumnSet("name", "description"));
+```
+#### Update Requests
+Updates the specified record.
+
+```javascript
+acc1.attributes["description"] = "Edited using the WebAPI endpoint";
+acc1.attributes["parentaccountid"] = new WebSDK.EntityReference("account", "acc20000-0000-0000-0000-000000000000");
+sdk.Update(acc1);
+```
+#### Retrieve Multiple Requests
+Equivalent of the RetrieveMultiple SDK operation.
+```javascript
+var qe = new WebSDK.QueryExpression();
+qe.entityname = "account";
+qe.columnset = new WebSDK.ColumnSet(["name", "description"]);
+qe.count = 5;
+
+var condition = new WebSDK.ConditionExpression("name", WebSDK.ComparisonOperator.Equal, "TESTAccount1");
+var condition2 = new WebSDK.ConditionExpression("description", WebSDK.ComparisonOperator.Contains, "WebSDK library");
+
+var filter = new WebSDK.FilterExpression(WebSDK.FilterType.Or);
+
+filter.AddCondition(condition);
+filter.AddCondition(condition2);
+
+qe.criteria.AddCondition(filter);
+
+var coll = sdk.RetrieveMultiple(qe, false);
+```
+#### Delete Requests
+Deletes the record specified by ID.
+```javascript
+sdk.Delete("account", "acc10000-0000-0000-0000-000000000000");
+```
+### Other available requests
+Additionally, there are operations that allow for quickly performing the following actions:
++ Associating/Disassociating records
++ Performing actions
++ Executing Batch operations
++ Executing Functions
 
 ## Additional info
 I've had some issues with the OOTB WebAPI wrapper (Xrm.WebAPI. ), in terms of the syntax and functionality available. Some of the main features of my implementation are:
