@@ -80,6 +80,7 @@ sdk.Delete("account", "acc10000-0000-0000-0000-000000000000");
 
 #### Associate Requests
 Associates the given records using the given relationship. This association works for both 1:N and N:N relationships. This means that lookups can also be populated using this method.
+
 NOTE: RELATIONSHIP ASSOCIATIONS USING WEBAPI ARE UNIDIRECTIONAL. This means that if you try to associate the records in the wrong direction this may not necessarily work. 
 ```javascript
 var ref1 = new WebSDK.EntityReference("logicalName", "guid");
@@ -89,7 +90,9 @@ sdk.Associate(ref1, "relationship_name", ref2);
 
 #### Disassociate Requests
 Disassociates the given records using the given relationship. This disassociation works for both 1:N and N:N relationships.
+
 NOTE: LOOKUPS MUST BE CLEARED USING THIS METHOD. ATTEMPTING TO CLEAR A LOOKUP USING AN UPDATE REQUEST WILL RESULT IN AN ERROR.
+
 NOTE: RELATIONSHIP ASSOCIATIONS USING WEBAPI ARE UNIDIRECTIONAL. This means that if you try to associate the records in the wrong direction this may not necessarily work. 
 ```javascript
 var ref1 = new WebSDK.EntityReference("logicalName", "guid");
