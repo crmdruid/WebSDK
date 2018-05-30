@@ -85,7 +85,7 @@ Additionally, there are operations that allow for quickly performing the followi
 + Executing Functions
 
 ## Additional info
-I've had some issues with the OOTB WebAPI wrapper (Xrm.WebAPI. ), in terms of the syntax and functionality available. Some of the main features of my implementation are:
+I've had some issues with the OOTB WebAPI wrapper (Xrm.WebApi. ), in terms of the syntax and functionality available. Some of the main features of my implementation are:
 
 ### Synchronous and Asynchronous operations
 All operations in the WebSDK library are able to be performed synchronously and asynchronously. Whether an action is performed synchronously or asynchronously is determined by two factors.
