@@ -1,4 +1,4 @@
-﻿//====================== Constructor ======================
+//====================== Constructor ======================
 function WebSDK(url, apiVersion, asyncByDefault) {
     this.sdkUrl = url || Xrm.Page.context.getClientUrl();
     this.apiVersion = apiVersion || parent.APPLICATION_VERSION || "8.2";
@@ -280,6 +280,7 @@ WebSDK.prototype._sendRequest = function (options) {
         try {
             req.send(body);
             if (!isBatchRequest) {
+                if (req.status == 204) return;
                 var resp = JSON.parse(req.responseText, this._dateReviver);
 
                 if (this._didError(resp)) {
@@ -466,10 +467,10 @@ WebSDK.prototype._getGuid = function () {
     //    });
     //}
     //else {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
     //}
 }
 
