@@ -111,7 +111,7 @@ sdk.Create(entity, async); // true for async, false for sync
 #### Async Callbacks
 Callbacks for async operations can be set in a few different ways.
 1. Using the JavaScript promise functionality -> .then, .catch
-  + Note that this can have some issues in IE, as Promises are not supported in IE.
+    + Note that this can have some issues in IE, as Promises are not supported in IE.
 2. Including callbacks in the method call
 
 ```javascript
